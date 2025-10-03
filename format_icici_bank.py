@@ -9,7 +9,18 @@ def GetFields(csvreader):
     values = next(csvreader)
     fields = {}
     for index, value in enumerate(values):
-        fields[value] = index
+        if value == "DATE" or "Value Date" in value:
+            fields["DATE"] = index
+        if value == "MODE" or "Cheque Number" in value:
+            fields["MODE"] = index
+        if value == "PARTICULARS" or "Transaction Remarks" in value:
+            fields["PARTICULARS"] = index
+        if value == "DEPOSITS" or "Deposit Amount" in value:
+            fields["DEPOSITS"] = index
+        if value == "WITHDRAWALS" or "Withdrawal Amount" in value:
+            fields["WITHDRAWALS"] = index
+        if value == "BALANCE" or "Balance" in value:
+            fields["BALANCE"] = index
     return fields
 
 def processInputFile(filename):
@@ -17,16 +28,22 @@ def processInputFile(filename):
     skip = True
     with open(filename, "r") as f:
         for line in f:
+            print("Processing line: %s" % line)
             # skip empty lines
             if not line.strip():
                 continue
+            if "Legends Used in Account Statement" in line:
+                print("Stopping")
+                break
             if line.startswith("REWARD POINTS SUMMARY"):
                 break
+            if "DATE,MODE,PARTICULARS,DEPOSITS,WITHDRAWALS,BALANCE" in line:
+                skip = False
+            if "S No.,Value Date,Transaction Date,Cheque Number,Transaction Remarks,Withdrawal Amount(INR),Deposit Amount(INR),Balance(INR)" in line:
+                skip = False
             if not skip:
                 lines.append(line.strip())
-            if line.startswith("DATE,MODE,PARTICULARS,DEPOSITS,WITHDRAWALS,BALANCE"):
-                lines.append(line.strip())
-                skip = False
+    print("Got total lines: %d" % len(lines))
     for line in lines:
         print("Got line: %s" % line)
     csvreader = csv.reader(lines)
