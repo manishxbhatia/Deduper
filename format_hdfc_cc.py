@@ -5,6 +5,9 @@ import argparse
 import csv
 import re
 
+_DELIMITER_ = "~|~"
+_OUT_DELIMITER_ = ","
+
 def ParseAmount(amount):
     x = re.sub(",", "", amount).split()
     if x[1] == "Cr.":
@@ -20,11 +23,12 @@ def GetFields(csvreader):
         fields[value] = index
     return fields
 
-def processInputFile(filename):
+def readTransactionsFromInputFile(filename):
     transactions = []
     skip = True
     with open(filename, "r") as f:
         for line in f:
+            print("Processing line: %s" % line)
             if not skip:
                 if line.strip() == "":
                     break
@@ -36,19 +40,23 @@ def processInputFile(filename):
 
 
 def ProcessRow(values):
+    x = re.sub(",", "", values[4])
     if values[5].startswith("Cr"):
-        x = re.sub(",", "", values[4])
         values[4] = str(-1*(float(x)))
+    else:
+        values[4] = str(float(x))
 
-def WriteOutput(transactions, filename):
+
+def ProcessTransactionsAndWriteOutput(transactions, filename):
     results = []
     for index, row in enumerate(transactions):
-        values = row.split("~")
+        print ("Processing Transaction %d: %s" % (index, row))
+        values = row.split(_DELIMITER_)
         if index == 0:
-            results.append(row)
+            results.append(_OUT_DELIMITER_.join(values))
         else:
             ProcessRow(values)
-            results.append("~".join(values))
+            results.append(_OUT_DELIMITER_.join(values))
     with open(filename, "w") as f:
         for row in results:
             f.write(row)
@@ -62,8 +70,8 @@ def main():
     args = parser.parse_args()
     print("Input file: %s" % args.input)
     print("output file: %s" % args.output)
-    transactions = processInputFile(args.input)
-    WriteOutput(transactions, args.output)
+    transactions = readTransactionsFromInputFile(args.input)
+    ProcessTransactionsAndWriteOutput(transactions, args.output)
 
 main()
     

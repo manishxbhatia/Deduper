@@ -19,6 +19,7 @@ def GetFields(csvreader):
     values = next(csvreader)
     fields = {}
     for index, value in enumerate(values):
+        print("Processing field %d %s" % (index, value))
         fields[value] = index
     return fields
 
@@ -36,13 +37,19 @@ def processInputFile(filename):
         print("Got line: %s" % line)
     csvreader = csv.reader(lines)
     fields = GetFields(csvreader)
+    print("Fields type %s" % type(fields))
+    for k,v in fields.items():
+        print("Got field: %s %s" % (k,v))
     processed_lines = []
     processed_lines.append(("Date",
                             "Details",
                             "Amount (INR)",
                             "Ref"))
-                            
+    print("index of date %d" % fields["Transaction Details"])
     for row in csvreader:
+        if len(row) < 4:
+            print("---------- IGNORING ROW:" , row)
+            continue
         date = row[fields["Date"]]
         details = row[fields["Transaction Details"]]
         amount = row[fields["Amount(in Rs)"]]

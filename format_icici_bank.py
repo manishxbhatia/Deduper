@@ -60,7 +60,8 @@ def processInputFile(filename):
     for row in csvreader:
         date = row[fields["DATE"]]
         details = row[fields["PARTICULARS"]]
-        if row[fields["MODE"]]:
+        mode = row[fields["MODE"]]
+        if mode and mode != "-":
             details = details + " (%s)" % row[fields["MODE"]]
         deposit = row[fields["DEPOSITS"]]
         withdrawal = row[fields["WITHDRAWALS"]]
