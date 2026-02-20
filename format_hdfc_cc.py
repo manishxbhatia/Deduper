@@ -16,12 +16,6 @@ def ParseAmount(amount):
     else:
         return x[0]
 
-def GetFields(csvreader):
-    values = next(csvreader)
-    fields = {}
-    for index, value in enumerate(values):
-        fields[value] = index
-    return fields
 
 def readTransactionsFromInputFile(filename):
     transactions = []
