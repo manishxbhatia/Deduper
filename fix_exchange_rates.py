@@ -16,8 +16,8 @@ class Record:
         date = args['date'] if 'date' in args else None
         mdy = args['mdy'] if 'mdy' in args else None
         dmy = args['dmy'] if 'dmy' in args else None
-        if date is None and mdy is None:
-            print("Invalid object - Date and mdy are both None")
+        if date is None and mdy is None and dmy is None:
+            print("Invalid object - Date, mdy, dmy are all None")
             sys.exit()
         if mdy is not None:
             self.date = self.toDate(mdy, DATE_FORMAT_MDY)
@@ -26,6 +26,8 @@ class Record:
             if self.date != d:
                 print("Dates not equal %s %s" % (mdy, dmy))
                 sys.exit()
+        elif dmy is not None:
+            self.date = self.toDate(dmy, DATE_FORMAT_DMY)
         else:
             self.date = date
 
@@ -99,7 +101,7 @@ class Processor:
                 if skip:
                     skip = False
                     continue
-                rec = Record(row[2], mdy=row[0], dmy=row[1])
+                rec = Record(row[1], dmy=row[0])
                 records.append(rec)
         if self.verbosity: self.printRecords(records)
         records = self.addMissingRecords(records)
