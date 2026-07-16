@@ -89,8 +89,4 @@ def main():
     WriteOutput(processed_lines, args.output)
 
 main()
-    
-    
-        
 
-    
